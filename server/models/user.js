@@ -14,11 +14,11 @@ var newUser = new User({
   email: 'mafideju@outlook.com'
 })
 
-newUser.save().then(doc => {
-  console.log('Data Registered', doc)
-}).catch(err => {
-  console.warn('Data Lost', err)
-})
+// newUser.save().then(doc => {
+//   console.log('Data Registered', doc)
+// }).catch(err => {
+//   console.warn('Data Lost', err)
+// })
 
 
-module.exports = { User }
+// module.exports = { User }
