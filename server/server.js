@@ -8,6 +8,7 @@ var { mongoose } = require('./db/mongoose');
 var { Todo } = require('./models/todo');
 var { User } = require('./models/user');
 var { Banda } = require('./models/bandas');
+var { authenticate } = require('./middleware/authenticate')
 
 var app = express();
 
@@ -26,19 +27,6 @@ app.post('/todos', (req, res) => {
     res.status(400).send(err)
   })
 });
-
-app.post('/users', (req, res) => {
-  var body = _.pick(req.body, ['email', 'password'])
-  var user = new User(body)
-
-  console.log(body)
-
-  user.save().then((user) => {
-    res.send(user)
-  }).catch((err) => {
-    res.status(400).send(err)
-  })
-})
 
 
 app.get('/todos', (req, res) => {
@@ -105,6 +93,30 @@ app.patch('/todos/:id', (req, res) => {
       res.send({ todo })
     }).catch(err => res.status(400).send());
 })
+
+
+
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password'])
+  var user = new User(body)
+
+  console.log(body)
+
+  user.save().then(() => {
+    return user.generateAuthToken()
+    // res.send(user)
+  }).then(token => {
+    res.header('x-auth', token).send(user)
+  }).catch((err) => {
+    res.status(400).send(err)
+  });
+});
+
+app.get('/users/me', authenticate, (req, res) => {
+  res.send(req.user);
+});
+
+
 
 app.listen(port, () => {
   console.log(`Servidor Rodando na ${port}`)
